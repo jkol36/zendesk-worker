@@ -52,7 +52,6 @@ const instantiateClient = () => {
 const handleDashboardData = dashboardData => {
     const { data } = dashboardData
     const { tab1data } = data
-    console.log(tab1data)
     const {
         contacts_incoming_total, 
         contacts_incoming_handled, 
@@ -69,9 +68,7 @@ const handleDashboardData = dashboardData => {
             calls_abondoned
         }
 }
-const handlePracticeSessions = practiceSessions => {
-    console.log('practice session', practiceSessions)
-}
+
 Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, practiceSessions) => {
     const { 
         contacts_incoming_handled, 
@@ -103,7 +100,6 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                 </tr>`
             )
         })
-        console.log('calls abandonded', calls_abondoned)
         const html = `
             <html>
                 <head> 
@@ -189,12 +185,11 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
             `
         const options = { format: "Letter" }
         pdf.create(html, options).toFile('./weeklysummary.pdf', (err, res) => {
-            console.log(res)
             const data = fs.readFileSync(res.filename)
             const filename = 'weeklysummary.pdf'
                 mg.messages.create('tools.vt.team', {
                 from: "Jonathan Kolman <mailgun@sandbox-123.mailgun.org>",
-                to: ["jonathankolman@gmail.com"],
+                to: ["jonathankolman@gmail.com", "Chris.marr@vt.team"],
                 subject: "Weekly summary",
                 html,
                 attachment: {data, filename, contentType: 'application/pdf'}
