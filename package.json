@@ -1,0 +1,50 @@
+{
+  "name": "node-starter-project",
+  "version": "1.0.0",
+  "description": "jon's node project template",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require babel-register -t 20000",
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jko36/node-starter-project.git"
+  },
+  "keywords": [
+    "node",
+    "starter",
+    "project"
+  ],
+  "author": "Jon Kolman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jko36/node-starter-project/issues"
+  },
+  "homepage": "https://github.com/jko36/node-starter-project#readme",
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/preset-env": "^7.14.1",
+    "chai": "^3.5.0",
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "babel-preset-env": "^1.7",
+    "bluebird": "^3.7.2",
+    "dotenv": "^6.0.0",
+    "firebase-admin": "^5.0.1",
+    "form-data": "^4.0.0",
+    "html-pdf": "^3.0.1",
+    "mailgun.js": "^3.5.4",
+    "moment": "^2.29.1",
+    "mongoose": "^5.1.7",
+    "needle": "^2.6.0",
+    "node-zendesk": "^2.1.0",
+    "nodemailer": "^6.6.3",
+    "pdf": "^0.1.0",
+    "pdfkit": "^0.12.3",
+    "superagent": "^6.1.0",
+    "superagent-bluebird-promise": "^4.2.0"
+  }
+}
