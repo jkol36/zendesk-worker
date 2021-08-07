@@ -6,6 +6,8 @@ const Mailgun = require('mailgun.js');
 const fs = require('fs');
 const mailgun = new Mailgun(formData);
 const PDFDocument = require("pdfkit");
+const html_to_pdf = require('html-pdf-node');
+
 const moment = require('moment');
 const pdf = require('html-pdf');
 const mg = mailgun.client({username: 'api', key: process.env.MAILGUN_API_KEY, public_key: process.env.MAILGUN_PUBLIC_KEY});
@@ -77,6 +79,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
         avg_handle_time, 
         calls_abondoned
         } = handleDashboardData(dashboardData)
+        console.log(practiceSessions[0])
         const practiceSessionNodes = practiceSessions.map(practiceSession => {
             const {
                 call_prompt,
@@ -89,7 +92,6 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
             return (
                 `
                 <tr> 
-                    <td> </td>
                     <td> ${moment(date)} </td>
                     <td> ${call_prompt} </td>
                     <td> ${language} </td>
@@ -100,14 +102,24 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                 </tr>`
             )
         })
+        const browserWebSigninIssues = practiceSessions.filter(ticket => ticket.issues === 'browser_web_sign-in_issues').length
+        const browserJoinMeetingIssues = practiceSessions.filter(ticket => ticket.issues === 'browser_web_start/join_meeting_issues').length
+        const otherInformationIssues = practiceSessions.filter(ticket => ticket.issues === 'other__information').length
+        const installedSoftwareIssues = practiceSessions.filter(ticket => ticket.issues === 'installedsoftware_desktop_sign-in_issues').length
+        const installedSoftwareMeetingIssues = practiceSessions.filter(ticket => ticket.issues === 'installedsoftware_desktop_start/join_meeting_issues').length
+        const otherReferToHealthCoachIssues = practiceSessions.filter(ticket => 'other_refer_to_health_coach').length
+        const windowsIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__windows').length
+        const macIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__macos').length
+        const androidIssues = practiceSessions.filter(ticket => ticket.device === 'moblie_device__android').length
+        console.log('other informaiton issues', otherInformationIssues)
         const html = `
             <html>
                 <head> 
                     <style> 
                         table {
-                        font-family: arial, sans-serif;
-                        border-collapse: collapse;
-                        width: 100%;
+                          font-family: arial, sans-serif;
+                          border-collapse: collapse;
+                          width: 100%;
                         }
 
                         td, th {
@@ -139,6 +151,9 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                             text-align: center;
                             width: 1000px;
                         }
+                        .table {
+                          table-layout: fixed;
+                        }
 
                        
 
@@ -147,8 +162,8 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                 <body>
                 <div>
                         <h2 style="text-align:center;"> Inbound Calls KPI's <span class="subtitle"> Live </span> </h2>
-                    <table> 
-                            <tr">
+                    <table class="table"> 
+                            <tr>
                                 <th> Total Inbound Calls </th>
                                 <th> Inbound calls answered </th>
                                 <th> average speed to answer </th>
@@ -156,7 +171,6 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                                 <th> Calls Abandonded </th>
                             </tr>
                             <tr> 
-                                <td> 0 </td>
                                 <td> ${contacts_incoming_total} </td>
                                 <td> ${contacts_incoming_handled} </td>
                                 <td> ${avg_speed_to_answer} </td>
@@ -167,8 +181,8 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                 </div>
                 <div>
                     <h2 style='text-align:center;'> Zendesk Dashboard <span style="color:#cdadad;">Live </span> </h2>
-                    <table> 
-                            <tr">
+                    <table class="table"> 
+                            <tr>
                                 <th> Date</th>
                                 <th> Call Prompt </th>
                                 <th> Call Language </th>
@@ -180,24 +194,97 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                             ${practiceSessionNodes}
                     </table>
                 </div>
+                <div>
+                    <h2 style='text-align:center;'> Tag Mapping </h2>
+                    <table class="table"> 
+                            <tr>
+                                <th> week </th>
+                                <th> Information</th>
+                                <th> Other Refer to Health Check </th>
+                                <th> Browser Signin Issues </th>
+                                <th> Start/Join Meeting Issues </th>
+                                <th> Feature Utilization </th>
+                                <th> Installed Software Signin Issues </th>
+                                <th> Start/Join meeting issues </th>
+                                <th> Installation Issue </th>
+                                <th> Feature Utilization </th>
+                                <th> Windows </th>
+                                <th> Mac </th>
+                                <th> IOS </th>
+                                <th> Android </th>
+                            </tr>
+                            
+                            <tr>
+                              <td> Week 1 </td> 
+                              <td> ${otherInformationIssues} </td>
+                              <td> ${otherReferToHealthCoachIssues} </td>
+                              <td> ${browserWebSigninIssues} </td>
+                              <td> ${browserJoinMeetingIssues} </td>
+                              <td> </td>
+                              <td> ${installedSoftwareIssues} </td>
+                              <td> ${installedSoftwareMeetingIssues} </td>
+                              <td> </td>
+                              <td> </td>
+                              <td> ${windowsIssues} </td>
+                              <td> ${macIssues} </td>
+                              <td> </td>
+                              <td> ${androidIssues} </td>
+                            </tr>
+                            <tr> 
+                              <td> Week 2 </td> 
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> 0 </td>
+                            </tr>
+                            <tr> 
+                              <td> Week 3 </td> 
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> </td>
+                              <td> 0 </td>
+                            </tr>
+                    </table>
+                </div>
                 </body>
             </html>
             `
-        const options = { format: "Letter" }
-        pdf.create(html, options).toFile('./weeklysummary.pdf', (err, res) => {
-            const data = fs.readFileSync(res.filename)
+        const options = { format: 'A4', path: './weeklysummary.pdf' }
+        html_to_pdf.generatePdf({content: html}, options).then(output => {
+            const data = fs.readFileSync('./weeklysummary.pdf')
             const filename = 'weeklysummary.pdf'
                 mg.messages.create('tools.vt.team', {
-                from: "Jonathan Kolman <mailgun@sandbox-123.mailgun.org>",
+                from: "reports@vt.team",
                 to: ["jonathankolman@gmail.com", "Chris.marr@vt.team"],
-                subject: "Weekly summary",
+                subject: "CVS Dashboard",
                 html,
                 attachment: {data, filename, contentType: 'application/pdf'}
             })
             .then(msg => console.log(msg)) // logs response data
             .catch(err => console.log(err)); // logs any error
             })
+            
         })
+        //pdf.create(html, options).toFile('./weeklysummary.pdf', (err, res) => {
+
         
 
 

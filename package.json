@@ -36,6 +36,7 @@
     "firebase-admin": "^5.0.1",
     "form-data": "^4.0.0",
     "html-pdf": "^3.0.1",
+    "html-pdf-node": "^1.0.7",
     "mailgun.js": "^3.5.4",
     "moment": "^2.29.1",
     "mongoose": "^5.1.7",
