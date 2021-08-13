@@ -67,7 +67,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
         avg_handle_time, 
         calls_abondoned
         } = handleDashboardData(dashboardData)
-        console.log(practiceSessions[0])
+
         const practiceSessionNodes = practiceSessions.map(practiceSession => {
             const {
                 call_prompt,
@@ -100,7 +100,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
         const macIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__macos').length
         const androidIssues = practiceSessions.filter(ticket => ticket.device === 'moblie_device__android').length
         
-        console.log('other informaiton issues', otherInformationIssues)
+
         const html = `
             <html>
                 <head> 
