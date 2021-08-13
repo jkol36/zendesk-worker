@@ -5,11 +5,9 @@ const formData = require('form-data');
 const Mailgun = require('mailgun.js');
 const fs = require('fs');
 const mailgun = new Mailgun(formData);
-const PDFDocument = require("pdfkit");
 const html_to_pdf = require('html-pdf-node');
 
 const moment = require('moment');
-const pdf = require('html-pdf');
 const mg = mailgun.client({username: 'api', key: process.env.MAILGUN_API_KEY, public_key: process.env.MAILGUN_PUBLIC_KEY});
 
 
@@ -92,7 +90,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
             return (
                 `
                 <tr> 
-                    <td> ${moment(date)} </td>
+                    <td> ${moment(date).format('MM/DD/YYYY')} </td>
                     <td> ${call_prompt} </td>
                     <td> ${language} </td>
                     <td> ${device} </td>
@@ -111,6 +109,11 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
         const windowsIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__windows').length
         const macIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__macos').length
         const androidIssues = practiceSessions.filter(ticket => ticket.device === 'moblie_device__android').length
+        const getEndOfWeek = (startOfWeek) => {
+          //console.log('start of the week is', startOfWeek.format('MM/DD/YYYY'))
+          //return startOfWeek.endOf('week').format('MM//DD/YYYY')
+        }
+        
         console.log('other informaiton issues', otherInformationIssues)
         const html = `
             <html>
@@ -164,23 +167,133 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                         <h2 style="text-align:center;"> Inbound Calls KPI's <span class="subtitle"> Live </span> </h2>
                     <table class="table"> 
                             <tr>
+                              <th> Week </th>
                                 <th> Total Inbound Calls </th>
                                 <th> Inbound calls answered </th>
                                 <th> average speed to answer </th>
                                 <th> Average Handle Time </th>
                                 <th> Calls Abandonded </th>
                             </tr>
-                            <tr> 
+                            <tr>
+                                <td> ${moment().startOf('week').format('MM/DD/YYYY')} - ${moment().endOf('week').format('MM/DD/YYYY')} </td>
                                 <td> ${contacts_incoming_total} </td>
                                 <td> ${contacts_incoming_handled} </td>
                                 <td> ${avg_speed_to_answer} </td>
                                 <td> ${avg_handle_time} </td>
                                 <td> ${calls_abondoned} </td>
                             </tr>
+                            <tr>
+                              <td> ${moment().startOf('week').add(1, 'w').format('MM/DD/YYYY')} - ${moment().endOf('week').add(1, 'w').format('MM/DD/YYYY')} </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                            </tr>
+                            <tr>
+                              <td> ${moment().startOf('week').add(2, 'w').format('MM//DD//YYYY')} - ${moment().endOf('week').add(2, 'w').format('MM/DD/YYYY')}   </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                              <td> 0 </td>
+                            </tr>
                     </table>
                 </div>
                 <div>
-                    <h2 style='text-align:center;'> Zendesk Dashboard <span style="color:#cdadad;">Live </span> </h2>
+                <h2 style='text-align:center;'> Ticket Summary </h2>
+                <table class="table"> 
+                        <tr>
+                            <th> week </th>
+                            <th> days </th>
+                            <th> Information</th>
+                            <th> Other Refer to Health Check </th>
+                            <th> Browser Signin Issues </th>
+                            <th> Start/Join Meeting Issues </th>
+                            <th> Feature Utilization </th>
+                            <th> Installed Software Signin Issues </th>
+                            <th> Start/Join meeting issues </th>
+                            <th> Installation Issue </th>
+                            <th> Feature Utilization </th>
+                            <th> Windows </th>
+                            <th> Mac </th>
+                            <th> IOS </th>
+                            <th> Android </th>
+                        </tr>
+                        
+                        <tr>
+                          <td> ${moment().startOf('week').format('MM/DD/YYYY')} ${moment().endOf('week').format('MM/DD/YYYY')} </td>
+                          <td> 5 </td> 
+                          <td> ${otherInformationIssues} </td>
+                          <td> ${otherReferToHealthCoachIssues} </td>
+                          <td> ${browserWebSigninIssues} </td>
+                          <td> ${browserJoinMeetingIssues} </td>
+                          <td> 0 </td>
+                          <td> ${installedSoftwareIssues} </td>
+                          <td> ${installedSoftwareMeetingIssues} </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> ${windowsIssues} </td>
+                          <td> ${macIssues} </td>
+                          <td> 0 </td>
+                          <td> ${androidIssues} </td>
+                        </tr>
+                        <tr> 
+                          <td> ${moment().startOf('week').add(1, 'w').format('MM/DD/YYYY')} - ${moment().endOf('week').add(1, 'w').format('MM/DD/YYYY')}  </td> 
+                          <td> 5 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                        </tr>
+                        <tr> 
+                          <td> ${moment().startOf('week').add(2, 'w').format('MM/DD/YYYY')} - ${moment().endOf('week').add(2, 'w').format('MM/DD/YYYY')} </td> 
+                          <td> 5 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                        </tr>
+                        <tr> 
+                          <td> Totals </td> 
+                          <td> N/A </td>
+                          <td> ${otherInformationIssues} </td>
+                          <td> ${otherReferToHealthCoachIssues} </td>
+                          <td> ${browserWebSigninIssues} </td>
+                          <td> ${browserJoinMeetingIssues} </td>
+                          <td> 0 </td>
+                          <td> ${installedSoftwareIssues} </td>
+                          <td> ${installedSoftwareMeetingIssues} </td>
+                          <td> 0 </td>
+                          <td> 0 </td>
+                          <td> ${windowsIssues} </td>
+                          <td> ${macIssues} </td>
+                          <td> 0 </td>
+                          <td> ${androidIssues} </td>
+                          
+                        </tr>
+                </table>
+            </div>
+                <div>
+                    <h2 style='text-align:center;'> Ticket Detail </h2>
                     <table class="table"> 
                             <tr>
                                 <th> Date</th>
@@ -194,76 +307,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
                             ${practiceSessionNodes}
                     </table>
                 </div>
-                <div>
-                    <h2 style='text-align:center;'> Tag Mapping </h2>
-                    <table class="table"> 
-                            <tr>
-                                <th> week </th>
-                                <th> Information</th>
-                                <th> Other Refer to Health Check </th>
-                                <th> Browser Signin Issues </th>
-                                <th> Start/Join Meeting Issues </th>
-                                <th> Feature Utilization </th>
-                                <th> Installed Software Signin Issues </th>
-                                <th> Start/Join meeting issues </th>
-                                <th> Installation Issue </th>
-                                <th> Feature Utilization </th>
-                                <th> Windows </th>
-                                <th> Mac </th>
-                                <th> IOS </th>
-                                <th> Android </th>
-                            </tr>
-                            
-                            <tr>
-                              <td> Week 1 </td> 
-                              <td> ${otherInformationIssues} </td>
-                              <td> ${otherReferToHealthCoachIssues} </td>
-                              <td> ${browserWebSigninIssues} </td>
-                              <td> ${browserJoinMeetingIssues} </td>
-                              <td> </td>
-                              <td> ${installedSoftwareIssues} </td>
-                              <td> ${installedSoftwareMeetingIssues} </td>
-                              <td> </td>
-                              <td> </td>
-                              <td> ${windowsIssues} </td>
-                              <td> ${macIssues} </td>
-                              <td> </td>
-                              <td> ${androidIssues} </td>
-                            </tr>
-                            <tr> 
-                              <td> Week 2 </td> 
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> 0 </td>
-                            </tr>
-                            <tr> 
-                              <td> Week 3 </td> 
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> </td>
-                              <td> 0 </td>
-                              <td> 0 </td>
-                              <td> </td>
-                              <td> 0 </td>
-                            </tr>
-                    </table>
-                </div>
+               
                 </body>
             </html>
             `
@@ -273,7 +317,7 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
             const filename = 'weeklysummary.pdf'
                 mg.messages.create('tools.vt.team', {
                 from: "reports@vt.team",
-                to: ["jonathankolman@gmail.com", "Chris.marr@vt.team"],
+                to: ["jonathankolman@gmail.com"],
                 subject: "CVS Dashboard",
                 html,
                 attachment: {data, filename, contentType: 'application/pdf'}
