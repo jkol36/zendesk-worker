@@ -39,16 +39,6 @@ const getDashboardData = () => {
           .then(res => res.body)
         
 }
-const instantiateClient = () => {
-    return new Promise((resolve, reject) => {
-        const client =  zendesk.createClient({
-            username:  process.env.ZENDESK_USERNAME,
-            token:     process.env.ZENDESK_API_KEY,
-            remoteUri: 'https://remote.zendesk.com/api/v2'
-        });
-        resolve(client)
-    }) 
-}
 const handleDashboardData = dashboardData => {
     const { data } = dashboardData
     const { tab1data } = data
@@ -109,10 +99,6 @@ Promise.all([getDashboardData(), getPracticeSessions()]).spread((dashboardData, 
         const windowsIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__windows').length
         const macIssues = practiceSessions.filter(ticket => ticket.device === 'desktop/laptop__macos').length
         const androidIssues = practiceSessions.filter(ticket => ticket.device === 'moblie_device__android').length
-        const getEndOfWeek = (startOfWeek) => {
-          //console.log('start of the week is', startOfWeek.format('MM/DD/YYYY'))
-          //return startOfWeek.endOf('week').format('MM//DD/YYYY')
-        }
         
         console.log('other informaiton issues', otherInformationIssues)
         const html = `
